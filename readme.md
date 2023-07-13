@@ -3,7 +3,7 @@
 
 My second  attempt to learn Go(golang)
 
-##WHY?
+## WHY?
 > It's fun to meet new error messages
 
 
