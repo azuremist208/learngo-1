@@ -1,40 +1,50 @@
 package main
 
 import (
-  // "fmt"
-  // "context"
-   "net/http"
-  // "github.com/redis/go-redis/v9"
-  "github.com/gin-gonic/gin"
+//	"fmt"
+	"context"
+	"log"
+	"net/http"
+	"github.com/redis/go-redis/v9"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-   router := gin.Default()
-/*
-   rdb := redis.NewClient(&redis.Options{
-        Addr: "127.0.0.1:6379",
-	Password: "",
-	DB: 0,
-       })
-   ctx := context.Background()
+	router := gin.Default()
 
+	rdb := redis.NewClient(&redis.Options{
+		Addr:       "127.0.0.1:6379",
+		Password:   "",
+		DB:         0,
+	})
+	ctx := context.Background()
 
-/*
-   fmt.Println(rdb)
+	/*
+	   fmt.Println(rdb)
 
-   val, err := rdb.Do(ctx, "set", "hi", "sex").Text()
-   fmt.Println(val, err)
-*/
+	   val, err := rdb.Do(ctx, "set", "hi", "sex").Text()
+	   fmt.Println(val, err)
+	*/
 
-     router.GET("/set", func(c *gin.Context) {
-     //remoteAddr := c.ClientIP()
-     value := c.Query("value")
-     data := gin.H{
-        "val": value,
-	}
+	router.GET("/set/:key/:value", func(c *gin.Context) {
+		//remoteAddr := c.ClientIP()
+		key := c.Param("key")
+		value := c.Param("value")
 
-     c.JSON(http.StatusOK, data)
-})
+		val, err := rdb.Do(ctx, "set", key, value).Text()
 
-router.Run(":8080")
+		if err != nil {
+			log.Println("Error:", err)
+			return
+		}
+
+		data := gin.H{
+			"output": val,
+		}
+
+		c.JSON(http.StatusOK, data)
+	})
+
+	router.Run(":8080")
 }
+
